@@ -131,6 +131,7 @@ public class Client {
                 notifyConnectionStatusChanged(false);
             }
         }
+
     }
 
     protected String getServerAddress(){
