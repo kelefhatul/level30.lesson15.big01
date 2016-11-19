@@ -6,6 +6,7 @@ import com.javarush.test.level30.lesson15.big01.Message;
 import com.javarush.test.level30.lesson15.big01.MessageType;
 
 import java.io.IOException;
+import java.net.Socket;
 
 /**
  * Created by root on 11/19/2016.
@@ -107,6 +108,27 @@ public class Client {
 
                     default: throw new IOException("Unexpected MessageType");
                 }
+            }
+        }
+        //17
+
+        @Override
+        public void run() {
+            //17.1
+            String serverIP = getServerAddress();
+            int serverPort = getServerPort();
+            //17.2
+            try {
+                Socket socket = new Socket(serverIP,serverPort);
+                Client.this.connection = new Connection(socket);
+                clientHandshake();
+                clientMainLoop();
+            } catch (IOException e) {
+                e.printStackTrace();
+                notifyConnectionStatusChanged(false);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+                notifyConnectionStatusChanged(false);
             }
         }
     }
