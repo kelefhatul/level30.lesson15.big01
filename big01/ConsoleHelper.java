@@ -22,7 +22,7 @@ public class ConsoleHelper {
                 break;
             } catch (IOException e) {
                 writeMessage("Произошла ошибка при попытке ввода текста. Попробуйте еще раз.");
-            } 
+            }
         }
         return inData;
     }
