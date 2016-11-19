@@ -101,5 +101,36 @@ public class Server {
 
 
         }
+
+        @Override
+        public void run() {
+            String newUserName = null;
+            //11.1
+            ConsoleHelper.writeMessage("New connection established with: " + socket.getRemoteSocketAddress());
+            //11.2
+            try(Connection connection = new Connection(socket)) {
+                //11.3
+                newUserName = serverHandshake(connection);
+                //11.4
+                sendBroadcastMessage(new Message(MessageType.USER_ADDED, newUserName));
+                //11.5
+                sendListOfUsers(connection,newUserName);
+                //11.6
+                serverMainLoop(connection,newUserName);
+                //11.8
+            } catch (IOException e) {
+                e.printStackTrace();
+                ConsoleHelper.writeMessage("Error with remote connection");
+            } catch (ClassNotFoundException e) {
+                ConsoleHelper.writeMessage("Error with remote connection");
+                e.printStackTrace();
+            }
+            //11.9
+            connectionMap.remove(newUserName);
+            sendBroadcastMessage(new Message(MessageType.USER_REMOVED, newUserName));
+            //11.10
+            ConsoleHelper.writeMessage("Remote connection closed");
+
+        }
     }
 }
