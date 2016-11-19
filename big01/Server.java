@@ -13,15 +13,6 @@ public class Server {
 
     private static Map<String, Connection> connectionMap = new ConcurrentHashMap<>();
 
-    private static class Handler extends Thread{
-
-        private Socket socket;
-
-        public Handler(Socket socket){
-            this.socket = socket;
-        }
-    }
-
     public static void sendBroadcastMessage(Message message){
         for (Map.Entry<String, Connection> pair : connectionMap.entrySet()
              ) {
@@ -44,6 +35,38 @@ public class Server {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+
+    private static class Handler extends Thread{
+
+        private Socket socket;
+
+        public Handler(Socket socket){
+            this.socket = socket;
+        }
+
+        private String serverHandshake(Connection connection) throws IOException, ClassNotFoundException{
+            while (true){
+                //8.1
+                connection.send(new Message(MessageType.NAME_REQUEST));
+                //8.2
+                Message message = connection.receive();
+                //8.3
+                if (message.getType() == MessageType.USER_NAME){
+                    //8.4
+                    if (message.getData() != null && !message.getData().isEmpty()){
+                        if (connectionMap.get(message.getData()) == null){
+                            //8.5
+                            connectionMap.put(message.getData(), connection);
+                            //8.6
+                            connection.send(new Message(MessageType.NAME_ACCEPTED));
+                            return message.getData();
+                        }
+                    }
+                }
+            }
         }
     }
 }
