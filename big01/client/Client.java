@@ -14,6 +14,44 @@ public class Client {
     protected Connection connection;
     private volatile boolean clientConnected = false;
 
+    public static void main(String[] args) {
+        Client client = new Client();
+        client.run();
+    }
+
+    //14
+    public void run() {
+        //14.1.1
+        SocketThread socketThread = getSocketThread();
+        //14.1.2
+        socketThread.setDaemon(true);
+        //14.1.3
+        socketThread.start();
+        //14.1.4
+        synchronized (this){
+            try {
+                this.wait();
+            } catch (InterruptedException e) {
+                ConsoleHelper.writeMessage("Error in socketThread");
+                return;
+            }
+        }
+        //14.1.5
+        if (clientConnected){
+            ConsoleHelper.writeMessage("Соединение установлено. Для выхода наберите команду 'exit'.");
+            while (true){
+                String reader = ConsoleHelper.readString();
+                //14.1.7
+                if ("exit".equals(reader)) break;
+                if (shouldSentTextFromConsole()){
+                    sendTextMessage(reader);
+                }
+            }
+        } else ConsoleHelper.writeMessage("Произошла ошибка во время работы клиента.");
+        //14.1.6
+
+    }
+
     public class SocketThread extends Thread{
 
     }
@@ -51,4 +89,6 @@ public class Client {
             clientConnected = false;
         }
     }
+
+
 }
